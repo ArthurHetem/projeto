@@ -1,69 +1,65 @@
-<?php 
+<?php
 
-namespace Hcode;
+namespace Hcode ;
 
 use Rain\Tpl;
 
-class Page {
+class Page{
+    private $tpl;
+    private $options = [];
+    private $defaults = ["data"=>[]];
 
-	private $tpl;
-	private $options = [];
-	private $defaults = [
-		"header"=>true,
-		"footer"=>true,
-		"data"=>[]
-	];
+    public function __construct($opts = array(),$tpl_dir = "/views/")
+    {
+        // TODO: Implement __destruct() method.
 
-	public function __construct($opts = array())
-	{
+        $this->options = array_merge($this->defaults,$opts);
 
-		$this->options = array_merge($this->defaults, $opts);
+        $config = array(
+            "tpl_dir"       => $_SERVER["DOCUMENT_ROOT"].$tpl_dir,
+            "cache_dir"     => $_SERVER["DOCUMENT_ROOT"]."/views-cache/",
+            "debug"         => false // set to false to improve the speed
+        );
 
-		$config = array(
-		    "base_url"      => null,
-		    "tpl_dir"       => $_SERVER['DOCUMENT_ROOT']."/curso/projeto/views/",
-		    "cache_dir"     => $_SERVER['DOCUMENT_ROOT']."/curso/projeto/views-cache/",
-		    "debug"         => false
-		);
+        Tpl::configure( $config );
 
-		Tpl::configure( $config );
+        $this->tpl  = new Tpl;
 
-		$this->tpl = new Tpl();
+       $this->setData($this->options["data"]);
 
-		if ($this->options['data']) $this->setData($this->options['data']);
+       $this->tpl->draw("header");
 
-		if ($this->options['header'] === true) $this->tpl->draw("header", false);
+    }
 
-	}
+    /**
+     * Dados do Conteudo da pagina
+    */
+    private function setData($data = array())
+    {
+        foreach ($data as $key => $value){
 
-	public function __destruct()
-	{
+            $this->tpl->assign($key,$value);
 
-		if ($this->options['footer'] === true) $this->tpl->draw("footer", false);
+        }
+    }
 
-	}
+    public function setTpl($name, $data = array(),$returnHTML = false)
+    {
 
-	private function setData($data = array())
-	{
+        $this->setData($data);
 
-		foreach($data as $key => $val)
-		{
+        return $this->tpl->draw($name, $returnHTML);
 
-			$this->tpl->assign($key, $val);
+    }
 
-		}
+    public function __destruct()
+    {
+        // TODO: Implement __destruct() method.
 
-	}
+        $this->tpl->draw("footer");
 
-	public function setTpl($tplname, $data = array(), $returnHTML = false)
-	{
-
-		$this->setData($data);
-
-		return $this->tpl->draw($tplname, $returnHTML);
-
-	}
+    }
 
 }
 
- ?>
+?>
