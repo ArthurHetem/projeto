@@ -277,7 +277,7 @@ $app->get("/admin/categories/:idcategory", function($idcategory){
 	]);
 });
 
-$app->post("/admin/categories/:idcategory", function($idcategory){ // para fazer update
+$app->post("/admin/categories/:idcategory", function($idcategory){
 	
 	User::verifyLogin();
 
@@ -291,6 +291,21 @@ $app->post("/admin/categories/:idcategory", function($idcategory){ // para fazer
 
 	header("Location: /admin/categories");
 	exit;
+});
+
+$app->get("/categories/:idcategory", function($idcategory){
+
+	$page = new Page();
+
+	$category = new Category();
+
+	$category->get((int)$idcategory);
+
+	$page->setTpl("category", [
+		"category"=>$category->getValues(),
+		"products"=>[]
+	]);
+
 });
 
 $app->run();
